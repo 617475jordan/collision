@@ -22,16 +22,16 @@ struct Position
 };
 
 
-//#define LevelCoefficient
+//#define LevelCoefficient 
 //#define VehicleNum 10
 
 class collisionDetected
 {
 public:
-	collisionDetected(std::vector<Position> vehcilePosition);
+	collisionDetected( std::vector<Position> vehcilePosition);
 	~collisionDetected();
 
-	void   AugmentedMatrixAssignment(int rows, int cols, double a[]); //¶ÔËù¹¹ÔìµÄ¶àÏîÊ½ÏµÊıÇó½âµÄÔö¹ã¾ØÕó¸³Öµ
+	void   AugmentedMatrixAssignment(int rows, int cols, double a[]); //å¯¹æ‰€æ„é€ çš„å¤šé¡¹å¼ç³»æ•°æ±‚è§£çš„å¢å¹¿çŸ©é˜µèµ‹å€¼
 	//bool AcquiringIntersectionCoordinates(unsigned char& number, double  coefficient[], double result[]);
 	double Quadrature(unsigned char& number, double  coefficient[], double& initialtValue, double& finalValue);
 	double GetLineLength(unsigned char& number, double  coefficient[], double& initialtValue, double& finalValue);
@@ -45,18 +45,19 @@ public:
 
 private:
 
-	double PowerSummationFunction(int k, int n); //x[i]´ÎÃİÇóºÍº¯Êı
-	double ProductSumFunction(int k, int n); //x[i]´ÎÃİÓëy[i]³Ë»ıÇóºÍº¯Êı
-	void   SolveEquation(int &m, double a[]); //Çó½â·½³Ìº¯Êı
-	double AdditionalFunction(double c[], int l, int& m); //¹©Cµ÷ÓÃ
+	double PowerSummationFunction(int k, int n); //x[i]æ¬¡å¹‚æ±‚å’Œå‡½æ•°
+	double ProductSumFunction(int k, int n); //x[i]æ¬¡å¹‚ä¸y[i]ä¹˜ç§¯æ±‚å’Œå‡½æ•°
+	void   SolveEquation(int &m, double a[]); //æ±‚è§£æ–¹ç¨‹å‡½æ•°
+	double AdditionalFunction(double c[], int l, int& m); //ä¾›Cè°ƒç”¨
 
 	//bool _AcquiringIntersectionCoordinates(double  coefficient[]);
 
 
-	double coefficientMatrix[10][10]; //Çó¶àÏîÊ½ÏµÊıÊ±ĞèÒªµÄ¾ØÕó
+	double coefficientMatrix[10][10]; //æ±‚å¤šé¡¹å¼ç³»æ•°æ—¶éœ€è¦çš„çŸ©é˜µ
 	double m_fResult[3];
 
 	std::vector<Position> m_vehiclePosition;
-	//unsigned char m_levelCoefficient = 0;    // 4 a*x*x*x*x+b*x*x*x+c*x*x+d*x+e
+	//unsigned char m_levelCoefficient = 0;    
 };
-
+//cofficent[5]  a+bx+c*pow(x,2)+d*pow(x,3)
+//cofficent[0]:none cofficent[1]:a cofficent[2]:b cofficent[3]:c cofficent[4]:d
