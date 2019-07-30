@@ -221,56 +221,84 @@ MSNet::MSNet(MSVehicleControl* vc, MSEventControl* beginOfTimestepEvents,
 
 bool MSNet::changeVehicleSpeed(std::string &firstVehicleName, std::string &secondVehcileName)
 {
-
-	std::map<std::string, double>::iterator iter;
+	//std::map<std::string, bool> vehiclePar;
+	//vehiclePar.insert(pair<std::string, double>(firstVehicleName, false));
+	//vehiclePar.insert(pair<std::string, double>(secondVehcileName, false));
+	std::vector<vehiclePara>::iterator iter;
 	bool m_firstVehilceFlag = false;
 	bool m_secondVehilceFlag = false;
 	for (iter = m_setSaveCurrentMaxSpeed.begin(); iter != m_setSaveCurrentMaxSpeed.end();iter++)
 	{
-		if (firstVehicleName == iter->first)
+		if (firstVehicleName == iter->vehicleName)
 		{
 			m_firstVehilceFlag = true;
 		}
-		if (secondVehcileName == iter->first)
+		if (secondVehcileName == iter->vehicleName)
 		{
 			m_secondVehilceFlag = true;
 		}
 	}
 
+
+	std::cout << "Start" << " " << "vehicleName:" << firstVehicleName << " " <<
+		" " << libsumo::Vehicle::getMaxSpeed(firstVehicleName) << " " <<
+		"vehicleName:" << secondVehcileName <<
+		" " << libsumo::Vehicle::getMaxSpeed(secondVehcileName) << std::endl;
+	std::random_device rd;
+	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	std::uniform_real_distribution<> dis(0.1, 1.0);
 	if (m_firstVehilceFlag == false)
 	{
-		m_setSaveCurrentMaxSpeed.insert(pair<std::string, double>(firstVehicleName, libsumo::Vehicle::getMaxSpeed(firstVehicleName)));
+		vehiclePara m_vehiclePara;
+		m_vehiclePara.vehicleName = firstVehicleName;
+		m_vehiclePara.vehicleSpeed = libsumo::Vehicle::getMaxSpeed(firstVehicleName);
+		m_setSaveCurrentMaxSpeed.push_back(m_vehiclePara);
+		
 	}
 	if (m_secondVehilceFlag == false)
 	{
-		m_setSaveCurrentMaxSpeed.insert(pair<std::string, double>(secondVehcileName, libsumo::Vehicle::getMaxSpeed(secondVehcileName)));
+		vehiclePara m_vehiclePara;
+		m_vehiclePara.vehicleName = secondVehcileName;
+		m_vehiclePara.vehicleSpeed = libsumo::Vehicle::getMaxSpeed(secondVehcileName);
+		m_setSaveCurrentMaxSpeed.push_back(m_vehiclePara);
 	}
-	std::random_device rd;
-	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	std::uniform_real_distribution<> dis(0.0, 1.0);
-	double m_dFirstVehicleSpeed = libsumo::Vehicle::getSpeed(firstVehicleName);
-	double m_dSecondVehicleSpeed = libsumo::Vehicle::getSpeed(secondVehcileName);
-	std::cout << "Start" << " " << "vehicleName:" << firstVehicleName << " " << m_dFirstVehicleSpeed <<
-		" " << libsumo::Vehicle::getMaxSpeed(firstVehicleName) << " " <<
-		"vehicleName:" << secondVehcileName << " " << m_dSecondVehicleSpeed <<
-		" " << libsumo::Vehicle::getMaxSpeed(secondVehcileName) << std::endl;
+	
+
 	double m_dFirstVehcileRate = 0;
 	double m_dSecondVehcileRate = 0;
-	double m_dThreshold = 0.2;
-	while (m_dSecondVehcileRate == m_dFirstVehcileRate || abs(m_dFirstVehcileRate - m_dSecondVehcileRate) < m_dThreshold)
+	double m_dTheshold = 0.2;
+
+	while (m_dSecondVehcileRate == m_dFirstVehcileRate || abs(m_dFirstVehcileRate - m_dSecondVehcileRate) < m_dTheshold)
 	{
 		m_dFirstVehcileRate = dis(gen);
 		m_dSecondVehcileRate = dis(gen);
 	}
-	libsumo::Vehicle::setSpeed(firstVehicleName, m_dFirstVehcileRate*m_dFirstVehicleSpeed);
-	libsumo::Vehicle::setSpeed(secondVehcileName, m_dSecondVehcileRate*m_dSecondVehicleSpeed);
-
 	libsumo::Vehicle::setMaxSpeed(firstVehicleName, libsumo::Vehicle::getMaxSpeed(firstVehicleName)*m_dFirstVehcileRate);
-	libsumo::Vehicle::setMaxSpeed(secondVehcileName, libsumo::Vehicle::getMaxSpeed(secondVehcileName)*m_dSecondVehcileRate);
 
-	std::cout << "End" << "   " << "vehicleName:" << firstVehicleName << " " << m_dFirstVehicleSpeed <<
-		" " << libsumo::Vehicle::getMaxSpeed(firstVehicleName) << " " <<
+	
+	libsumo::Vehicle::setMaxSpeed(secondVehcileName, libsumo::Vehicle::getMaxSpeed(secondVehcileName)*m_dSecondVehcileRate);
+	//double m_dFirstVehicleSpeed = libsumo::Vehicle::getSpeed(firstVehicleName);
+	//double m_dSecondVehicleSpeed = libsumo::Vehicle::getSpeed(secondVehcileName);
+	//std::cout << "Start" << " " << "vehicleName:" << firstVehicleName << " " << m_dFirstVehicleSpeed <<
+	/*	" " << libsumo::Vehicle::getMaxSpeed(firstVehicleName) << " " <<
 		"vehicleName:" << secondVehcileName << " " << m_dSecondVehicleSpeed <<
+		" " << libsumo::Vehicle::getMaxSpeed(secondVehcileName) << std::endl;*/
+
+	
+	/*double m_dThreshold = 0.05;
+	while (m_dSecondVehcileRate == m_dFirstVehcileRate || abs(m_dFirstVehcileRate - m_dSecondVehcileRate) < m_dThreshold)
+	{
+		
+		m_dSecondVehcileRate = dis(gen);
+	}*/
+	//libsumo::Vehicle::setSpeed(firstVehicleName, m_dFirstVehcileRate*m_dFirstVehicleSpeed);
+	//libsumo::Vehicle::setSpeed(secondVehcileName, m_dSecondVehcileRate*m_dSecondVehicleSpeed);
+
+	
+
+	std::cout << "End" << "   " << "vehicleName:" << firstVehicleName << " " << "" <<
+		" " << libsumo::Vehicle::getMaxSpeed(firstVehicleName) << " " <<
+		"vehicleName:" << secondVehcileName << " " << "" <<
 		" " << libsumo::Vehicle::getMaxSpeed(secondVehcileName) << std::endl << std::endl;
 	return true;
 }
@@ -620,9 +648,11 @@ MSNet::simulationStep() {
 	myStep += DELTA_T;
 
 	clock_t m_time = clock();
-	Position position(145.48, 1456.16, 0);
+	Position position(890.15, 764.43, 18.67);
 	PositionVector shape;
 	shape.push_back(position);
+	/*shape.push_back(Position(551.67, 1006.46, 18.29));
+	shape.push_back(Position(1123.24, 529.38, 19.40));*/
 	double range = 100;
 	std::set<std::string> info;
 	libsumo::Helper::collectObjectsInRange(CMD_GET_VEHICLE_VARIABLE, shape, range, info);
@@ -663,7 +693,7 @@ MSNet::simulationStep() {
 		m_vecCurrentVehiclPrePosition.clear();
 	}
 
-	std::map<std::string, double>::iterator  m_iterator;
+	std::vector<vehiclePara>::iterator  m_iterator;
 	if (m_setSaveCurrentMaxSpeed.size() > 1e+3)
 	{
 		m_setSaveCurrentMaxSpeed.clear();
@@ -675,15 +705,15 @@ MSNet::simulationStep() {
 			bool m_bFlag = false;
 			for (iter = info.begin(); iter != info.end(); iter++)
 			{
-				if (*iter == m_iterator->first)
+				if (*iter == m_iterator->vehicleName)
 				{
 					m_bFlag = true;
 				}
 			}
 			if (m_bFlag == false)
 			{
-				libsumo::Vehicle::setMaxSpeed(m_iterator->first, m_iterator->second);
-				m_setSaveCurrentMaxSpeed.erase(m_iterator++);
+				libsumo::Vehicle::setMaxSpeed(m_iterator->vehicleName, m_iterator->vehicleSpeed);
+				m_iterator = m_setSaveCurrentMaxSpeed.erase(m_iterator);
 
 			}
 			else if (m_bFlag == true)
@@ -725,11 +755,13 @@ MSNet::simulationStep() {
 			}
 			collisionDetected *m_secondCollisionDetected = new collisionDetected(/*LevelCoefficient,*/ m_vecVehcilePrePositon[j]);
 			bool m_secondTraceIsJudgePositionYChange = false;
-
 			m_secondTraceIsJudgePositionYChange = m_secondCollisionDetected->IsTwoCoordinateConsistent(m_vecVehcilePrePositon[j], "col");
 
+
+			double m_fMaxVehicleDistance = (m_vecVehcilePrePositon[i][0].length > m_vecVehcilePrePositon[j][0].length) ? m_vecVehcilePrePositon[i][0].length : m_vecVehcilePrePositon[j][0].length;
+			m_fMaxVehicleDistance = m_fMaxVehicleDistance * 2;
 			if (m_firstTraceIsJudgePositionYChange == false && m_secondTraceIsJudgePositionYChange == false
-				&& abs(m_vecVehcilePrePositon[i][0].x - m_vecVehcilePrePositon[j][0].x) <= (m_vecVehcilePrePositon[i][0].width + m_vecVehcilePrePositon[j][0].width) / 2.0)//??????§Ò????????????????????????
+				&& abs(m_vecVehcilePrePositon[i][0].x - m_vecVehcilePrePositon[j][0].x) <= m_fMaxVehicleDistance)//??????§Ò????????????????????????
 			{
 				double m_initialPositionY = m_vecVehcilePrePositon[i][0].y - m_vecVehcilePrePositon[j][0].y;
 				double m_finalPositionY = m_vecVehcilePrePositon[i][m_uIFirstVehiclePositionSize].y -
@@ -749,7 +781,7 @@ MSNet::simulationStep() {
 			m_secondTraceIsJudgePositionXChange = m_secondCollisionDetected->IsTwoCoordinateConsistent(m_vecVehcilePrePositon[j], "row");
 
 			if (m_firstTraceIsJudgePositionXChange == false && m_firstTraceIsJudgePositionXChange == false
-				&& abs(m_vecVehcilePrePositon[i][0].y - m_vecVehcilePrePositon[j][0].y) <= (m_vecVehcilePrePositon[i][0].width + m_vecVehcilePrePositon[j][0].width) / 2.0)//??????§Ò????????????????????????
+				&& abs(m_vecVehcilePrePositon[i][0].y - m_vecVehcilePrePositon[j][0].y) <= m_fMaxVehicleDistance)//??????§Ò????????????????????????
 			{
 				double m_initialPositionX = m_vecVehcilePrePositon[i][0].x - m_vecVehcilePrePositon[j][0].x;
 				double m_finalPositionX = m_vecVehcilePrePositon[i][m_uIFirstVehiclePositionSize].x
@@ -764,8 +796,6 @@ MSNet::simulationStep() {
 
 			}
 
-			double m_fSuccessPoint[3] = { 0 };
-			unsigned int m_iSuccessNum = 0;
 
 			double m_fFirstVehiclePolynomialCoefficient[10] = { 0 }; //?????????????????
 			double m_fSecondVehiclePolynomialCoefficient[10] = { 0 }; //?????????????????
@@ -782,6 +812,22 @@ MSNet::simulationStep() {
 					delete[] m_secondCollisionDetected;
 					continue;
 				}
+				else
+				{
+					std::vector<vehiclePara>::iterator m_vecVehiclePar;
+					for (m_vecVehiclePar = m_setSaveCurrentMaxSpeed.begin(); m_vecVehiclePar != m_setSaveCurrentMaxSpeed.end();)
+					{
+						if (m_vecVehiclePar->vehicleName == vehicleName[j]|| m_vecVehiclePar->vehicleName == vehicleName[i])
+						{
+							libsumo::Vehicle::setMaxSpeed(m_vecVehiclePar->vehicleName, m_vecVehiclePar->vehicleSpeed);
+							m_vecVehiclePar = m_setSaveCurrentMaxSpeed.erase(m_vecVehiclePar);
+						}
+						else
+						{
+							m_vecVehiclePar++;
+						}
+					}
+				}
 			}
 			else if (m_firstTraceIsJudgePositionYChange == true && m_secondTraceIsJudgePositionYChange == false)
 			{
@@ -794,16 +840,46 @@ MSNet::simulationStep() {
 					delete[] m_secondCollisionDetected;
 					continue;
 				}
+				else
+				{
+					std::vector<vehiclePara>::iterator m_vecVehiclePar;
+					for (m_vecVehiclePar = m_setSaveCurrentMaxSpeed.begin(); m_vecVehiclePar != m_setSaveCurrentMaxSpeed.end();)
+					{
+						if (m_vecVehiclePar->vehicleName == vehicleName[j] || m_vecVehiclePar->vehicleName == vehicleName[i])
+						{
+							libsumo::Vehicle::setMaxSpeed(m_vecVehiclePar->vehicleName, m_vecVehiclePar->vehicleSpeed);
+							m_vecVehiclePar = m_setSaveCurrentMaxSpeed.erase(m_vecVehiclePar);
+						}
+						else
+						{
+							m_vecVehiclePar++;
+						}
+					}
+				}
 
 			}
 			else if (m_firstTraceIsJudgePositionXChange == true && m_firstTraceIsJudgePositionYChange == true &&
 				m_secondTraceIsJudgePositionXChange == true && m_secondTraceIsJudgePositionYChange == true)
 			{
 				std::vector<collisionDetectedPosition> m_cmpVehiclePosition(m_uIFirstVehiclePositionSize + 1);
-
-				m_firstCollisionDetected->AugmentedMatrixAssignment((int)m_uIFirstVehiclePositionSize, LevelCoefficient, m_fFirstVehiclePolynomialCoefficient);
-				m_secondCollisionDetected->AugmentedMatrixAssignment((int)m_uIFirstVehiclePositionSize, LevelCoefficient, m_fSecondVehiclePolynomialCoefficient);
-
+				if (m_vecVehcilePrePositon[i][0].speed < 1.0)
+				{
+					m_fFirstVehiclePolynomialCoefficient[1] = -1.0*tan(m_vecVehcilePrePositon[i][0].angle)*m_vecVehcilePrePositon[i][0].x+ m_vecVehcilePrePositon[i][0].y;
+					m_fFirstVehiclePolynomialCoefficient[2] = tan(m_vecVehcilePrePositon[i][0].angle);
+				}
+				else
+				{
+					m_firstCollisionDetected->AugmentedMatrixAssignment((int)m_uIFirstVehiclePositionSize, LevelCoefficient, m_fFirstVehiclePolynomialCoefficient);
+				}
+				if (m_vecVehcilePrePositon[j][0].speed < 1.0)
+				{
+					m_fSecondVehiclePolynomialCoefficient[1] = -1.0*tan(m_vecVehcilePrePositon[j][0].angle)*m_vecVehcilePrePositon[j][0].x + m_vecVehcilePrePositon[j][0].y;
+					m_fSecondVehiclePolynomialCoefficient[2] = tan(m_vecVehcilePrePositon[j][0].angle);
+				}
+				else
+				{
+					m_secondCollisionDetected->AugmentedMatrixAssignment((int)m_uIFirstVehiclePositionSize, LevelCoefficient, m_fSecondVehiclePolynomialCoefficient);
+				}
 				collisionDetected *m_cmpCollisionDetected = new collisionDetected(/*LevelCoefficient,*/ m_cmpVehiclePosition);
 				m_cmpVehiclePosition.clear();
 
@@ -836,8 +912,8 @@ MSNet::simulationStep() {
 
 
 						double m_fMinPosition = (m_fFirstVehicleMinPosition > m_fSecondVehicleMinPosition) ? m_fFirstVehicleMinPosition : m_fSecondVehicleMinPosition;
-						double m_fMaxPosition = (m_fSecondVehicleMaxPosition < m_fSecondVehicleMaxPosition) ? m_fSecondVehicleMaxPosition : m_fSecondVehicleMaxPosition;
-						double m_fMaxVehicleDistance = (m_vecVehcilePrePositon[i][0].length > m_vecVehcilePrePositon[j][0].length) ? m_vecVehcilePrePositon[i][0].length : m_vecVehcilePrePositon[j][0].length;
+						double m_fMaxPosition = (m_fFirstVehicleMaxPosition < m_fSecondVehicleMaxPosition) ? m_fSecondVehicleMaxPosition : m_fSecondVehicleMaxPosition;
+						
 						m_fMinPosition = m_fMinPosition - m_fMaxVehicleDistance;
 						m_fMaxPosition = m_fMaxPosition + m_fMaxVehicleDistance;
 						if (m_fMinPosition <= m_fResult[m_cEquationSolutionNum] && m_fMaxPosition >= m_fResult[m_cEquationSolutionNum])
@@ -866,23 +942,25 @@ MSNet::simulationStep() {
 								m_vecVehcilePrePositon[j][0].x, m_fResult[i])) / m_vecVehcilePrePositon[j][0].speed;*/
 								//	}
 							unsigned char m_cFirstVehilceEquationSolutionNum = 0;
-							double m_firstVehilceResult[2] = { 0 };
+							double m_firstVehilceTimeResult[2] = { 0 };
 							bool m_bFirstVehilce = false;
-							/*if (m_bFirstVehilce == false)
+							m_bFirstVehilce = m_firstCollisionDetected->UnivariateQuadraticSolution(m_cCoefficientNum, m_firstVehilceCoefficient, m_cFirstVehilceEquationSolutionNum, m_firstVehilceTimeResult);
+							if (m_bFirstVehilce == false)
 							{
 								continue;
-							}*/
-							m_firstCollisionDetected->UnivariateQuadraticSolution(m_cCoefficientNum, m_firstVehilceCoefficient, m_cFirstVehilceEquationSolutionNum, m_firstVehilceResult);
-							for (int m_iFirstVehilceEquationSolutionNum = 0; m_iFirstVehilceEquationSolutionNum < m_cFirstVehilceEquationSolutionNum; m_iFirstVehilceEquationSolutionNum++)
+							}
+							for (unsigned char num = 0; num < 2; num++)
 							{
-								if (m_firstVehilceResult[m_iFirstVehilceEquationSolutionNum] < m_fMinPosition || m_firstVehilceResult[m_iFirstVehilceEquationSolutionNum]>m_fMaxPosition)
+								if (m_firstVehilceTimeResult[num] <= 0)
 								{
 									m_bFirstVehilce = false;
 									continue;
 								}
 								else
 								{
-									m_firstVehicleTime = m_firstVehilceResult[m_iFirstVehilceEquationSolutionNum];
+									m_bFirstVehilce = true;
+									m_firstVehicleTime = m_firstVehilceTimeResult[num];
+									break;
 								}
 							}
 							if (m_bFirstVehilce == false)
@@ -891,23 +969,26 @@ MSNet::simulationStep() {
 							}
 
 							unsigned char m_cSecondVehilceEquationSolutionNum = 0;
-							double m_secondVehilceResult[2] = { 0 };
+							double m_secondVehilceTimeResult[2] = { 0 };
 							bool m_bSecondVehilce = false;
-							/*if (m_bSecondVehilce == false)
+							m_bSecondVehilce=m_secondCollisionDetected->UnivariateQuadraticSolution(m_cCoefficientNum, m_secondVehilceCoefficient, m_cSecondVehilceEquationSolutionNum, m_secondVehilceTimeResult);
+							
+							if (m_bSecondVehilce == false)
 							{
 								continue;
-							}*/
-							m_secondCollisionDetected->UnivariateQuadraticSolution(m_cCoefficientNum, m_secondVehilceCoefficient, m_cSecondVehilceEquationSolutionNum, m_secondVehilceResult);
-							for (int m_iSecondVehilceEquationSolutionNum = 0; m_iSecondVehilceEquationSolutionNum < m_cSecondVehilceEquationSolutionNum; m_iSecondVehilceEquationSolutionNum++)
+							}
+							for (unsigned char num = 0; num < 2; num++)
 							{
-								if (m_secondVehilceResult[m_iSecondVehilceEquationSolutionNum] < m_fMinPosition || m_secondVehilceResult[m_iSecondVehilceEquationSolutionNum]>m_fMaxPosition)
+								if (m_secondVehilceTimeResult[num] <= 0)
 								{
 									m_bSecondVehilce = false;
 									continue;
 								}
 								else
 								{
-									m_secondVehicleTime = m_secondVehilceResult[m_iSecondVehilceEquationSolutionNum];
+									m_bSecondVehilce = true;
+									m_secondVehicleTime = m_secondVehilceTimeResult[num];
+									break;
 								}
 							}
 							if (m_bSecondVehilce == false)
@@ -949,7 +1030,19 @@ MSNet::simulationStep() {
 										double m_fDistanceBias = m_vecVehcilePrePositon[i][0].speed*sin(m_fTheta)*m_fTimeBias;
 										if (m_fDistanceBias >= (m_vecVehcilePrePositon[i][0].length + m_vecVehcilePrePositon[j][0].width) / 2)
 										{
-
+											std::vector<vehiclePara>::iterator m_vecVehiclePar;
+											for (m_vecVehiclePar = m_setSaveCurrentMaxSpeed.begin(); m_vecVehiclePar != m_setSaveCurrentMaxSpeed.end();)
+											{
+												if (m_vecVehiclePar->vehicleName == vehicleName[j] || m_vecVehiclePar->vehicleName == vehicleName[i])
+												{
+													libsumo::Vehicle::setMaxSpeed(m_vecVehiclePar->vehicleName, m_vecVehiclePar->vehicleSpeed);
+													m_vecVehiclePar = m_setSaveCurrentMaxSpeed.erase(m_vecVehiclePar);
+												}
+												else
+												{
+													m_vecVehiclePar++;
+												}
+											}
 										}
 										else
 										{
@@ -965,39 +1058,32 @@ MSNet::simulationStep() {
 										double m_fDistanceBias = m_vecVehcilePrePositon[j][0].speed*sin(m_fTheta)*m_fTimeBias;
 										if (m_fDistanceBias >= (m_vecVehcilePrePositon[j][0].length + m_vecVehcilePrePositon[i][0].width) / 2)
 										{
-
+											std::vector<vehiclePara>::iterator m_vecVehiclePar;
+											for (m_vecVehiclePar = m_setSaveCurrentMaxSpeed.begin(); m_vecVehiclePar != m_setSaveCurrentMaxSpeed.end();)
+											{
+												if (m_vecVehiclePar->vehicleName == vehicleName[j] || m_vecVehiclePar->vehicleName == vehicleName[i])
+												{
+													libsumo::Vehicle::setMaxSpeed(m_vecVehiclePar->vehicleName, m_vecVehiclePar->vehicleSpeed);
+													m_vecVehiclePar = m_setSaveCurrentMaxSpeed.erase(m_vecVehiclePar);
+												}
+												else
+												{
+													m_vecVehiclePar++;
+												}
+											}
 										}
 										else
 										{
 											changeVehicleSpeed(vehicleName[i], vehicleName[j]);
-											/*m_secondCollisionDetected = NULL;
-											delete[] m_secondCollisionDetected;
-											continue;*/
+									
 										}
 									}
 								}
-								/*							else
-															{
-																m_secondCollisionDetected = NULL;
-																delete[] m_secondCollisionDetected;
-																continue;
-															}*/
+
 							}
 						}
-						/*	else
-							{
-								m_secondCollisionDetected = NULL;
-								delete[] m_secondCollisionDetected;
-								continue;
-							}*/
 					}
 				}
-				/*else
-				{
-					m_secondCollisionDetected = NULL;
-					delete[] m_secondCollisionDetected;
-					continue;
-				}*/
 			}
 			m_secondCollisionDetected = NULL;
 			delete[] m_secondCollisionDetected;
