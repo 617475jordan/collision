@@ -241,10 +241,10 @@ bool MSNet::changeVehicleSpeed(std::string &firstVehicleName, std::string &secon
 	{
 		m_setSaveCurrentMaxSpeed.insert(pair<std::string, double>(firstVehicleName, libsumo::Vehicle::getMaxSpeed(firstVehicleName)));
 	}
-	/*if (m_secondVehilceFlag == false)
+	if (m_secondVehilceFlag == false)
 	{
 		m_setSaveCurrentMaxSpeed.insert(pair<std::string, double>(secondVehcileName, libsumo::Vehicle::getMaxSpeed(secondVehcileName)));
-	}*/
+	}
 	std::random_device rd;
 	std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
 	std::uniform_real_distribution<> dis(0.0, 1.0);
@@ -623,7 +623,7 @@ MSNet::simulationStep() {
 	Position position(145.48, 1456.16, 0);
 	PositionVector shape;
 	shape.push_back(position);
-	double range = 30;
+	double range = 100;
 	std::set<std::string> info;
 	libsumo::Helper::collectObjectsInRange(CMD_GET_VEHICLE_VARIABLE, shape, range, info);
 
@@ -822,7 +822,7 @@ MSNet::simulationStep() {
 				if (m_bMeetPointFlag == true && m_iEquationSolutionNum > 0)
 				{
 					//double m_fBias = 2;//consider the vehicle width and height which cases the time cost
-					for (unsigned char m = 0; m < (unsigned char)m_iEquationSolutionNum; m++)
+					for (unsigned char m_cEquationSolutionNum = 0; m_cEquationSolutionNum < (unsigned char)m_iEquationSolutionNum; m_cEquationSolutionNum++)
 					{
 
 						double m_fFirstVehicleMinPosition = (m_vecVehcilePrePositon[i][0].x < m_vecVehcilePrePositon[i][m_uIFirstVehiclePositionSize].x) ?
@@ -836,11 +836,11 @@ MSNet::simulationStep() {
 
 
 						double m_fMinPosition = (m_fFirstVehicleMinPosition > m_fSecondVehicleMinPosition) ? m_fFirstVehicleMinPosition : m_fSecondVehicleMinPosition;
-						double m_fMaxPosition = (m_fFirstVehicleMaxPosition < m_fSecondVehicleMaxPosition) ? m_fFirstVehicleMaxPosition : m_fSecondVehicleMaxPosition;
+						double m_fMaxPosition = (m_fSecondVehicleMaxPosition < m_fSecondVehicleMaxPosition) ? m_fSecondVehicleMaxPosition : m_fSecondVehicleMaxPosition;
 						double m_fMaxVehicleDistance = (m_vecVehcilePrePositon[i][0].length > m_vecVehcilePrePositon[j][0].length) ? m_vecVehcilePrePositon[i][0].length : m_vecVehcilePrePositon[j][0].length;
 						m_fMinPosition = m_fMinPosition - m_fMaxVehicleDistance;
 						m_fMaxPosition = m_fMaxPosition + m_fMaxVehicleDistance;
-						if (m_fMinPosition <= m_fResult[m] && m_fMaxPosition >= m_fResult[m])
+						if (m_fMinPosition <= m_fResult[m_cEquationSolutionNum] && m_fMaxPosition >= m_fResult[m_cEquationSolutionNum])
 						{
 
 							double m_firstVehicleTime = 0;
@@ -849,9 +849,9 @@ MSNet::simulationStep() {
 							double m_firstVehilceDistance = 0;
 							double m_secondVehilceDistance = 0;
 							m_firstVehilceDistance = abs(m_firstCollisionDetected->GetLineLength(LevelCoefficient, m_fFirstVehiclePolynomialCoefficient,
-								m_vecVehcilePrePositon[i][0].x, m_fResult[m]));
-							m_secondVehilceDistance = abs(m_firstCollisionDetected->GetLineLength(LevelCoefficient, m_fFirstVehiclePolynomialCoefficient,
-								m_vecVehcilePrePositon[i][0].x, m_fResult[m]));
+								m_vecVehcilePrePositon[i][0].x, m_fResult[m_cEquationSolutionNum]));
+							m_secondVehilceDistance = abs(m_secondCollisionDetected->GetLineLength(LevelCoefficient, m_fSecondVehiclePolynomialCoefficient,
+								m_vecVehcilePrePositon[j][0].x, m_fResult[m_cEquationSolutionNum]));
 
 
 							//0+a+bx+cx2
@@ -868,10 +868,10 @@ MSNet::simulationStep() {
 							unsigned char m_cFirstVehilceEquationSolutionNum = 0;
 							double m_firstVehilceResult[2] = { 0 };
 							bool m_bFirstVehilce = false;
-							if (m_bFirstVehilce == false)
+							/*if (m_bFirstVehilce == false)
 							{
 								continue;
-							}
+							}*/
 							m_firstCollisionDetected->UnivariateQuadraticSolution(m_cCoefficientNum, m_firstVehilceCoefficient, m_cFirstVehilceEquationSolutionNum, m_firstVehilceResult);
 							for (int m_iFirstVehilceEquationSolutionNum = 0; m_iFirstVehilceEquationSolutionNum < m_cFirstVehilceEquationSolutionNum; m_iFirstVehilceEquationSolutionNum++)
 							{
@@ -893,10 +893,10 @@ MSNet::simulationStep() {
 							unsigned char m_cSecondVehilceEquationSolutionNum = 0;
 							double m_secondVehilceResult[2] = { 0 };
 							bool m_bSecondVehilce = false;
-							if (m_bSecondVehilce == false)
+							/*if (m_bSecondVehilce == false)
 							{
 								continue;
-							}
+							}*/
 							m_secondCollisionDetected->UnivariateQuadraticSolution(m_cCoefficientNum, m_secondVehilceCoefficient, m_cSecondVehilceEquationSolutionNum, m_secondVehilceResult);
 							for (int m_iSecondVehilceEquationSolutionNum = 0; m_iSecondVehilceEquationSolutionNum < m_cSecondVehilceEquationSolutionNum; m_iSecondVehilceEquationSolutionNum++)
 							{
